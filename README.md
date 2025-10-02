@@ -7,16 +7,32 @@
 
 # Hardware Requirements
 
+ - Raspberry Pi Pico 2 W
+ - Adafruit PN532
+ - USB to microUSB data cable
+ - *Arduino UNO
+ - *RFID-RC522 module
+
+*Necessary for RFID test lock
+
 
 # Software Requirements
 
+ - micropython .UF2 for pi pico 2 W
+ - mpremote (recommended)
+ - pyserial (optional debugging)
+ - NFC PN532 SPI library
+ - *ArduinoIDE
+ - *MFRC library
+
+*Necessary for RFID test lock
 
 # Installation
 
 
 ## Wiring Diagram (if necessary for emulator)
 
-# RFID Lock
+# RFID Test Lock
 
 ## *Wiring*
 
