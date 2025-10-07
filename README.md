@@ -24,6 +24,8 @@
  - NFC PN532 SPI library
  - *ArduinoIDE
  - *MFRC library
+ - thonny
+ - PN532 driver
 
 *Necessary for RFID test lock
 
@@ -31,6 +33,16 @@
 
 
 ## Wiring Diagram (if necessary for emulator)
+Pico 2 W (GPIO)        ->   Adafruit PN532 breakout
+-------------------------------------------------
+3V3 (3.3V pin)         ->   VCC / 3.3V
+GND                    ->   GND
+GP18 (SPI0 SCK)        ->   SCK
+GP19 (SPI0 MOSI)       ->   MOSI (SDA)
+GP16 (SPI0 MISO)       ->   MISO (SSO / SO)
+GP17 (CS / CHIP_SELECT)->   SS   (active low)
+(optional) GP15        ->   IRQ
+(optional) GP20        ->   RSTO / RST
 
 # RFID Test Lock
 
