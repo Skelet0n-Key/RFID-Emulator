@@ -4,7 +4,7 @@ import time
 
 # Initialize SPI0 using your wiring
 spi = SPI(0,
-          baudrate=1000000,
+          baudrate=1152000,
           polarity=0,
           phase=0,
           bits=8,
@@ -32,6 +32,7 @@ print('Found PN532 with firmware version: {}.{}'.format(ver, rev))
 # Configure for MiFare cards
 pn532.SAM_configuration()
 
+
 # Read function
 def read_nfc(dev, timeout_ms=500):
     print('Waiting for a card...')
@@ -48,5 +49,10 @@ def read_nfc(dev, timeout_ms=500):
     print('CARD NOT FOUND')
     return None
 
+
+time.sleep(2)
+
 # Run test
-read_nfc(pn532, 100000)
+while (True):
+    time.sleep(0.5)
+    read_nfc(pn532, 115200)
