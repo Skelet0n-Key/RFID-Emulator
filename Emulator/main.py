@@ -39,11 +39,11 @@ def read_nfc(dev, timeout_ms=500):
     start = time.ticks_ms()
     while time.ticks_diff(time.ticks_ms(), start) < timeout_ms:
         uid = dev.read_passive_target(timeout=50)
+        uid_string = ""
         if uid:
-            numbers = [i for i in uid]
-            string_ID = '{}-{}-{}-{}'.format(*numbers)
-            print('Found card with UID:', [hex(i) for i in uid])
-            print('Number_id:', string_ID)
+            uid_array = [hex(i) for i in uid]
+            uid_string = uid_string.join(uid_array).upper().replace('0X', '')
+            print(f"Read UID: {uid_string}")
             return uid
         time.sleep(0.05)
     print('CARD NOT FOUND')
