@@ -2,6 +2,12 @@
 
 (links to sections)
 
+**Timeline**
+
+- Test lock finished (9/26/25)
+- Basic read functions implemented on PN532 (10/7/25)
+- Emulating function implemented, it is discovered that an 0x08 is prepended to every emulation (10/16/25)
+
 # Features
 
 
