@@ -27,7 +27,7 @@
  - micropython .UF2 for pi pico 2 W
  - mpremote (recommended)
  - pyserial (optional debugging)
- - NFC PN532 SPI library
+ - NFC PN532 SPI library https://github.com/Carglglz/NFC_PN532_SPI?tab=readme-ov-file
  - *ArduinoIDE
  - *MFRC library
  - thonny
