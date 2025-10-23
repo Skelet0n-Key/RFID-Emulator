@@ -105,9 +105,15 @@ def write_uid_to_card(dev, uid_to_write, timeout_ms=10000):
         if dev.mifare_classic_authenticate_block(target_uid, block_number, nfc.MIFARE_CMD_AUTH_B, nfc.KEY_DEFAULT_B):
             # Write the 4-byte chunk
             if dev.ntag2xx_write_block(block_number, chunk):
+                green_LED.value(1)
                 print(f"Block {block_number} written successfully.")
+                time.sleep(0.5)
+                green_LED.value(0)
             else:
+                red_LED.value(1)
                 print(f"Error: Failed to write to block {block_number}.")
+                time.sleep(0.5)
+                red_LED.value(0)
                 return  # Stop if one write fails
         else:
             print(f"Error: Failed to authenticate block {block_number}.")
@@ -116,7 +122,10 @@ def write_uid_to_card(dev, uid_to_write, timeout_ms=10000):
             if dev.ntag2xx_write_block(block_number, chunk):
                 print(f"Block {block_number} written successfully")
             else:
+                red_LED.value(1)
                 print(f"Failed to write to block {block_number}")
+                time.sleep(0.5)
+                red_LED.value(0)
                 return
 
         block_number += 1
@@ -133,12 +142,18 @@ while True:
         scan_LED.value(1)
 
         scanned_uid = read_card_uid(pn532)
+        scan_LED.value(0)
         if scanned_uid:
+            green_LED.value(1)
             saved_uid = scanned_uid
             print("UID saved")
+            time.sleep(0.5)
+            green_LED.value(0)
         else:
+            red_LED.value(1)
             print("Scan failed. No UID was saved.")
-        scan_LED.value(0)
+            time.sleep(0.5)
+            red_LED.value(0)
 
         # Wait for the button to be released
         while scan_button.value() == 0:
@@ -152,6 +167,15 @@ while True:
 
         if saved_uid is None:
             print("Error: No UID has been saved.")
+            time.sleep(0.25)
+            write_LED.value(0)
+            time.sleep(0.25)
+            write_LED.value(1)
+            time.sleep(0.25)
+            write_LED.value(0)
+            time.sleep(0.25)
+            write_LED(1)
+            time.sleep(0.25)
         else:
             uid_string = "".join(["{:02X}".format(i) for i in saved_uid])
             print(f"Writing: {uid_string}")
