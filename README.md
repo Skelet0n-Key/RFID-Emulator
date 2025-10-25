@@ -4,8 +4,6 @@
 
 This project aims to solve a problem that we have: "I want to get through that door." This device is a lock-pick of sorts... but for 13.56MHz RFID locks. We move apartments a lot as college students and some apartments have better amenities than others. Why not enjoy them all?!
 
-**Testing and Results**
-
 **Challenges and Solutions**
 
 - We wanted a controlled environment to test our project's functionality and so that's what we did. We made an RFID lock with an arduino uno and MFRC-522 module ([code found here](RFID_lock/RFID_lock.ino)). The lock came with it's own problems. It took a while to find out what was going on, but we weren't getting any response from our MFRC-522 because it wasn't an official module. We needed to slow down communication to our module and connect it to 5V even though 3.3V was printed on the PCB. *Note: we labeled it 3.3V-3.3V in the wiring diagram*
@@ -17,6 +15,8 @@ This project aims to solve a problem that we have: "I want to get through that d
 - Basic read functions implemented on PN532 (10/7/25)
 - Emulating function implemented, it is discovered that an 0x08 is prepended to every emulation (10/16/25)
 - Writing function finished (10/23/25)
+
+**Testing and Results**
 
 # Project Capabilities
 
