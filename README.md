@@ -78,9 +78,10 @@ We also used two indicator LEDs on D2 and D4 so we didn't have to look at the te
 
 ## CAD Files
 
+We used a few prints to bring this project together and give it a more prolished look. You can find them [here]()
 (link)
 
 # Acknowledgements
-We used Carglglz driver(https://github.com/Carglglz/NFC_PN532_SPI) to control the basic functions of the pn532, such as initialization and reading mifare classics
+We used Carglglz's [driver](https://github.com/Carglglz/NFC_PN532_SPI) to control the basic functions of the PN532, such as initialization and reading mifare classics
 
-We added functionality to that driver using the principles from the adafruit pn532 driver (https://github.com/adafruit/Adafruit-PN532/blob/master/Adafruit_PN532.cpp) to write data to programmable card, following mifare classic protocol. 
+We added functionality to that driver using the principles from the [Adafruit PN532 driver](https://github.com/adafruit/Adafruit-PN532/blob/master/Adafruit_PN532.cpp) to write data to a programmable card, following mifare classic protocol. 
