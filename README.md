@@ -81,3 +81,5 @@ We also used two indicator LEDs on D2 and D4 so we didn't have to look at the te
 (link)
 
 # Acknowledgements
+We used Carglglz driver(https://github.com/Carglglz/NFC_PN532_SPI) to control the basic functions of the pn532, such as initialization and reading mifare classics
+We added functionality to that driver using the principles from the adafruit pn532 driver (https://github.com/adafruit/Adafruit-PN532/blob/master/Adafruit_PN532.cpp)
