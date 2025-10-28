@@ -15,6 +15,7 @@ This project aims to solve a problem that we have: "I want to get through that d
 - Basic read functions implemented on PN532 (10/7/25)
 - Emulating function implemented, it is discovered that an 0x08 is prepended to every emulation (10/16/25)
 - Writing function finished (10/23/25)
+- Functional prototype finished (10/27/25)
 
 **Testing and Results**
 
