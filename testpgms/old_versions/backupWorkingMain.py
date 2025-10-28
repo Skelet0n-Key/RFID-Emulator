@@ -32,8 +32,7 @@ red_LED.value(0)
 
 
 # Initialize GPIO pins for the buttons.
-# We are using internal pull-ups, so the buttons should be wired
-# to connect the pin to ground when pressed.
+# using internal pull-ups
 scan_button = Pin(14, Pin.IN, Pin.PULL_UP)
 write_button = Pin(13, Pin.IN, Pin.PULL_UP)
 
@@ -48,22 +47,9 @@ print('Found PN532 with firmware version: {}.{}'.format(ver, rev))
 pn532.SAM_configuration()
 
 
-def calculate_bcc(uid_bytes):
-    """
-    Calculates the BCC (XOR checksum) for a 4-byte MIFARE UID.
-    """
-    if len(uid_bytes) != 4:
-        raise ValueError("UID must be 4 bytes long")
-    bcc = 0
-    for byte in uid_bytes:
-        bcc ^= byte
-    return bcc
-
-
 def read_source_card_data(dev, timeout_ms=5000):
     """
-    Waits for a source card, authenticates block 0, validates its BCC, 
-    and reads the 16-byte block.
+    Waits for a source card, authenticates block 0, and reads it.
     Returns the 16 bytes of block 0, or None if it fails.
     """
     print('Waiting for SOURCE card...')
@@ -86,7 +72,7 @@ def read_source_card_data(dev, timeout_ms=5000):
     print(f"Found source card with UID: {uid_string}")
 
     # Authenticate block 0 (or any block in sector 0) to read it.
-    # We'll try a common default key, KEY_DEFAULT_B (all 0xFFs)
+    # common default key, KEY_DEFAULT_B (all 0xFFs)
     print("Trying to authenticate with default key FF FF FF FF FF FF...")
     if not dev.mifare_classic_authenticate_block(uid, 0, nfc.MIFARE_CMD_AUTH_B, nfc.KEY_DEFAULT_B):
         print("Failed to authenticate block 0 with default key.")
@@ -98,30 +84,12 @@ def read_source_card_data(dev, timeout_ms=5000):
     # Read block 0
     block0_data = dev.mifare_classic_read_block(0)
     
-    if not block0_data:
-        print("Failed to read block 0.")
-        return None
-
-    print(f"Successfully read Block 0: {[hex(b) for b in block0_data]}")
-
-    # --- BCC SAFETY CHECK ---
-    print("Validating source card BCC...")
-    card_uid_part = block0_data[0:4]
-    card_bcc_part = block0_data[4]
-    
-    calculated_bcc = calculate_bcc(card_uid_part)
-    
-    if card_bcc_part == calculated_bcc:
-        print(f"BCC is valid! (Read: 0x{card_bcc_part:02X}, Calculated: 0x{calculated_bcc:02X})")
+    if block0_data:
+        print(f"Successfully read Block 0: {[hex(b) for b in block0_data]}")
         return block0_data
     else:
-        print("--- !!! BCC VALIDATION FAILED !!! ---")
-        print(f"Read UID: {[hex(b) for b in card_uid_part]}")
-        print(f"Read BCC: 0x{card_bcc_part:02X}")
-        print(f"Calculated BCC: 0x{calculated_bcc:02X}")
-        print("This card may be damaged or non-standard. Aborting clone to prevent bricking.")
+        print("Failed to read block 0.")
         return None
-    # --- END OF BCC CHECK ---
 
 
 def write_data_to_clone(dev, block_data, timeout_ms=10000):
@@ -151,11 +119,11 @@ def write_data_to_clone(dev, block_data, timeout_ms=10000):
     target_uid_string = "".join(["{:02X}".format(i) for i in target_uid])
     print(f"Found target card with UID: {target_uid_string}")
 
-    # For "Gen2" or "lab 401" cards, we can try a normal authentication
+    # For "Gen2" or "lab 401" cards, can try a normal authentication
     # and then a standard write command to block 0.
     
     print("Attempting to authenticate target card...")
-    # We must authenticate with the card's *current* key.
+    # authenticate with the card's *current* key.
     # For a blank/new magic card, this is often the default key.
     if not dev.mifare_classic_authenticate_block(target_uid, 0, nfc.MIFARE_CMD_AUTH_B, nfc.KEY_DEFAULT_B):
         print("Failed to authenticate target card with default key.")
@@ -178,14 +146,15 @@ def write_data_to_clone(dev, block_data, timeout_ms=10000):
         print("Verify the new UID by scanning it again (press Scan button).")
     else:
         print("Error: Failed to write to block 0.")
-        print("This may not be a 'Direct Write' card, or it may be faulty.")
+        print("This may not be a UID-modifiable card, or it may require")
+        print("a different 'magic' command (e.g., for Gen1a cards).")
         red_LED.value(1)
         time.sleep(1)
         red_LED.value(0)
-        
+
 
 # --- Main Loop ---
-print("\n--- MIFARE 1K Cloner Ready (with BCC Check) ---")
+print("\n--- MIFARE 1K Cloner Ready ---")
 print("Press SCAN button to read from source card.")
 print("Press WRITE button to write to target card.")
 while True:
@@ -245,4 +214,3 @@ while True:
     
     # A small delay to prevent the loop from running too fast
     time.sleep(0.05)
-

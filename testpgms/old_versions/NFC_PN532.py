@@ -119,11 +119,11 @@ class PN532:
 
         try:
             self._wakeup()
-            self.get_firmware_version()  # first time often fails, try 2ce
+            # self.get_firmware_version()  # first time often fails, try 2ce
             return
         except (BusyError, RuntimeError):
             pass
-        self.get_firmware_version()
+        # self.get_firmware_version()
 
     def _wakeup(self):
         """Send any special commands/data to wake up PN532"""
@@ -357,8 +357,6 @@ class PN532:
         response = self.call_function(_COMMAND_INDATAEXCHANGE,
                                       params=params,
                                       response_length=1)
-        if response is None:
-            return False
         return response[0] == 0x00
 
     def ntag2xx_read_block(self, block_number):
@@ -367,10 +365,7 @@ class PN532:
         data starting at the specified block will be returned.  If the block is
         not read then None will be returned.
         """
-        data = self.mifare_classic_read_block(block_number)
-        if data:
-            return data[0:4] # only 4 bytes per page for NTAG
-        return None
+        return self.mifare_classic_read_block(block_number)[0:4]  # only 4 bytes per page
 
     def mifare_classic_read_block(self, block_number):
         """Read a block of data from the card.  Block number should be the block
@@ -384,51 +379,10 @@ class PN532:
                                               block_number & 0xFF],
                                       response_length=17)
         # Check first response is 0x00 to show success.
-        if response is None or response[0] != 0x00:
-            return None
-        # Return 16 bytes of data.
-        return response[1:]
-
-    # --- NEW FUNCTION ---
-    # this function based on the C++ example from adafruit
-    # https://github.com/adafruit/Adafruit-PN532/blob/master/Adafruit_PN532.cpp
-    # developed for lab401 1k mifare direct write UID modifiable card.
-    
-    def mifare_classic_write_block(self, block_number, data):
-        """Write a block of 16 bytes to the card.  Block number should be the block
-        to write and data should be a byte array of length 16 with the data to
-        write.  If the data is successfully written then True is returned,
-        otherwise False is returned.
-        """
-        assert data is not None and len(
-            data) == 16, 'Data must be an array of 16 bytes!'
-        
-        # Build parameters for InDataExchange command
-        params = bytearray(3 + 16)
-        params[0] = 0x01  # Target number (always 1)
-        params[1] = MIFARE_CMD_WRITE
-        params[2] = block_number & 0xFF
-        params[3:] = data
-        
-        # Send InDataExchange request.
-        response = self.call_function(_COMMAND_INDATAEXCHANGE,
-                                      params=params,
-                                      response_length=1) # Expect 1 byte status
-        
-        # Check first response is 0x00 to show success.
-        if response is None:
-            if self.debug:
-                print("DEBUG: No response from card after write command")
-            return False
-            
         if response[0] != 0x00:
-            if self.debug:
-                # 0x0A is NAK (Not Acknowledged)
-                print(f"DEBUG: Card returned error status 0x{response[0]:02X}")
-            return False
-            
-        return True
-    # --- END OF NEW FUNCTION ---
+            return None
+        # Return first 4 bytes since 16 bytes are always returned.
+        return response[1:]
 
     def mifare_classic_authenticate_block(self, uid, block_number, key_number=MIFARE_CMD_AUTH_B, key=KEY_DEFAULT_B):  # pylint: disable=invalid-name
         """Authenticate specified block number for a MiFare classic card.  Uid
@@ -451,6 +405,5 @@ class PN532:
         response = self.call_function(
             _COMMAND_INDATAEXCHANGE, params=params, response_length=1
         )
-        if response is None:
-            return False
         return response[0] == 0x00
+
