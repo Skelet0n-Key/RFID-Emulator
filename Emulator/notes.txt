@@ -1,1 +1,0 @@
-mpremote run main.py

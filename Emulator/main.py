@@ -155,7 +155,7 @@ def write_data_to_clone(dev, block_data, timeout_ms=10000):
     # and then a standard write command to block 0.
     
     print("Attempting to authenticate target card...")
-    # We must authenticate with the card's *current* key.
+    # authenticate with the card's current key.
     # For a blank/new magic card, this is often the default key.
     if not dev.mifare_classic_authenticate_block(target_uid, 0, nfc.MIFARE_CMD_AUTH_B, nfc.KEY_DEFAULT_B):
         print("Failed to authenticate target card with default key.")
