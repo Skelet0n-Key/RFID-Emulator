@@ -3,6 +3,7 @@
 **Introduction**
 
 This project aims to solve a problem that we have: "I want to get through that door." This device is a lock-pick of sorts... but for 13.56MHz RFID locks. We move apartments a lot as college students and some apartments have better amenities than others. Why not enjoy them all?!
+The standard pn532 is widely available and cheap. Unfortunately almost all pn532s have a firmware "brick" as i like to call it. Manufacturers prevent custom UID's from being emulated. When the 532 is put into target mode, the first byte of the UID will always be 0x08. While there are ways to get around this security feature, it is difficult, unreliable, and requires perfect timing. (read more about it here: https://www.mankier.com/1/nfc-emulate-uid). Rather than using the workaround we chose to use a UID programmable RFID card from lab401, wrote our desired UID's to it in write mode. This bypasses the security feature with 1 extra step/component. In practice this works perfectly as a card is much more discreet than a raspberry pi pico and breakout board. 
 
 **Challenges and Solutions**
 
