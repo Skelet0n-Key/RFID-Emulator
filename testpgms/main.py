@@ -18,8 +18,8 @@ cs.value(1)
 rst = Pin(20, Pin.OUT)
 rst.value(1)
 # IRQ pin is not used in this library's polling mode
-# irq = Pin(15, Pin.IN) 
-irq = None # Set to None
+# irq = Pin(15, Pin.IN)
+irq = None  # Set to None
 
 scan_LED = Pin(2, Pin.OUT)
 scan_LED.value(0)
@@ -81,7 +81,7 @@ def read_source_card_data(dev, timeout_ms=5000):
     if not uid:
         print('CARD NOT FOUND')
         return None
-        
+
     uid_string = "".join(["{:02X}".format(i) for i in uid])
     print(f"Found source card with UID: {uid_string}")
 
@@ -92,12 +92,12 @@ def read_source_card_data(dev, timeout_ms=5000):
         print("Failed to authenticate block 0 with default key.")
         print("Note: Card must use the default key FF FF FF FF FF FF for this to work.")
         return None
-    
+
     print("Authentication successful.")
-    
+
     # Read block 0
     block0_data = dev.mifare_classic_read_block(0)
-    
+
     if not block0_data:
         print("Failed to read block 0.")
         return None
@@ -108,9 +108,9 @@ def read_source_card_data(dev, timeout_ms=5000):
     print("Validating source card BCC...")
     card_uid_part = block0_data[0:4]
     card_bcc_part = block0_data[4]
-    
+
     calculated_bcc = calculate_bcc(card_uid_part)
-    
+
     if card_bcc_part == calculated_bcc:
         print(f"BCC is valid! (Read: 0x{card_bcc_part:02X}, Calculated: 0x{calculated_bcc:02X})")
         return block0_data
@@ -153,7 +153,7 @@ def write_data_to_clone(dev, block_data, timeout_ms=10000):
 
     # For "Gen2" or "lab 401" cards, we can try a normal authentication
     # and then a standard write command to block 0.
-    
+
     print("Attempting to authenticate target card...")
     # We must authenticate with the card's *current* key.
     # For a blank/new magic card, this is often the default key.
@@ -163,9 +163,9 @@ def write_data_to_clone(dev, block_data, timeout_ms=10000):
         time.sleep(0.5)
         red_LED.value(0)
         return
-        
+
     print("Target card authenticated. Attempting to write to Block 0...")
-    
+
     # Now, try to write the saved block 0 data
     if dev.mifare_classic_write_block(0, block_data):
         print("SUCCESS! Block 0 written.")
@@ -173,7 +173,7 @@ def write_data_to_clone(dev, block_data, timeout_ms=10000):
         green_LED.value(1)
         time.sleep(1)
         green_LED.value(0)
-        
+
         print("\n--- CLONE COMPLETE ---")
         print("Verify the new UID by scanning it again (press Scan button).")
     else:
@@ -182,7 +182,7 @@ def write_data_to_clone(dev, block_data, timeout_ms=10000):
         red_LED.value(1)
         time.sleep(1)
         red_LED.value(0)
-        
+
 
 # --- Main Loop ---
 print("\n--- MIFARE 1K Cloner Ready (with BCC Check) ---")
@@ -197,10 +197,10 @@ while True:
 
         scanned_data = read_source_card_data(pn532)
         scan_LED.value(0)
-        
+
         if scanned_data:
             green_LED.value(1)
-            saved_block_0 = scanned_data # Save the 16-byte block
+            saved_block_0 = scanned_data  # Save the 16-byte block
             print("Block 0 data saved.")
             time.sleep(0.5)
             green_LED.value(0)
@@ -235,14 +235,13 @@ while True:
             data_string = "".join(["{:02X}".format(i) for i in saved_block_0])
             print(f"Writing data: {data_string}")
             write_data_to_clone(pn532, saved_block_0)
-            
+
         write_LED.value(0)
 
         # Wait for the button to be released
         while write_button.value() == 0:
             pass
         print("\n--- Ready for next command ---")
-    
+
     # A small delay to prevent the loop from running too fast
     time.sleep(0.05)
-

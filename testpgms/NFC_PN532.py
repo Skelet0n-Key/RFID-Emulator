@@ -274,19 +274,19 @@ class PN532:
             self._wakeup()
             return None
         if not self._wait_ready(timeout):
-            if(self.debug):
+            if (self.debug):
                 print('DEBUG: _wait_ready timed out waiting for ACK')
             return None
         # Verify ACK response and wait to be ready for function response.
         if not _ACK == self._read_data(len(_ACK)):
             raise RuntimeError('Did not receive expected ACK from PN532!')
         if not self._wait_ready(timeout):
-            if(self.debug):
+            if (self.debug):
                 print('DEBUG: _wait_ready timed out waiting for response')
             return None
         # Read response bytes.
         response = self._read_frame(response_length+2)
-        if(self.debug):
+        if (self.debug):
             print('DEBUG: call_function response:', [hex(i) for i in response])
         # Check that response is for the called function.
         if not (response[0] == _PN532TOHOST and response[1] == (command+1)):
@@ -393,7 +393,7 @@ class PN532:
     # this function based on the C++ example from adafruit
     # https://github.com/adafruit/Adafruit-PN532/blob/master/Adafruit_PN532.cpp
     # developed for lab401 1k mifare direct write UID modifiable card.
-    
+
     def mifare_classic_write_block(self, block_number, data):
         """Write a block of 16 bytes to the card.  Block number should be the block
         to write and data should be a byte array of length 16 with the data to
@@ -402,31 +402,31 @@ class PN532:
         """
         assert data is not None and len(
             data) == 16, 'Data must be an array of 16 bytes!'
-        
+
         # Build parameters for InDataExchange command
         params = bytearray(3 + 16)
         params[0] = 0x01  # Target number (always 1)
         params[1] = MIFARE_CMD_WRITE
         params[2] = block_number & 0xFF
         params[3:] = data
-        
+
         # Send InDataExchange request.
         response = self.call_function(_COMMAND_INDATAEXCHANGE,
                                       params=params,
-                                      response_length=1) # Expect 1 byte status
-        
+                                      response_length=1)  # Expect 1 byte status
+
         # Check first response is 0x00 to show success.
         if response is None:
             if self.debug:
                 print("DEBUG: No response from card after write command")
             return False
-            
+
         if response[0] != 0x00:
             if self.debug:
                 # 0x0A is NAK (Not Acknowledged)
                 print(f"DEBUG: Card returned error status 0x{response[0]:02X}")
             return False
-            
+
         return True
     # --- END OF NEW FUNCTION ---
 
