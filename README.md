@@ -2,14 +2,14 @@
 
 **Introduction**
 
-This project aims to solve a problem that we have: "I want to get through that door." This device is a lock-pick of sorts... but for 13.56MHz RFID locks. We move apartments a lot as college students and some apartments have better amenities than others. Why not enjoy them all?!
+This project aims to solve a problem that we have: "I want to get through that door." This device is a lock-pick of sorts... but for 13.56MHz RFID locks.
 
-suggested change -corbin "The standard pn532 is widely available and cheap. Unfortunately almost all pn532s have a firmware "brick" as i like to call it. Manufacturers prevent custom UID's from being emulated. When the 532 is put into target mode, the first byte of the UID will always be 0x08. While there are ways to get around this security feature, it is difficult to impliment in an embedded system, unreliable, and requires perfect timing (read more about it here: https://www.mankier.com/1/nfc-emulate-uid). Rather than using the workaround we chose to use a UID programmable RFID card from lab401 as a sort of middle man. Our emulator writes our desired UID's to the lab401 card in write mode. The card becomes a perfect clone of your desired target. This bypasses the security feature with only 1 extra step/component. In practice this works perfectly as a card is much more discreet than a raspberry pi pico and breakout board." 
+The standard PN532 is widely available and cheap. Manufacturers prevent custom UIDs from being emulated. When the 532 is put into target mode, the first byte of the UID will always be 0x08 (or 0x88 with some models). While there are ways to get around this security feature, it is difficult to implement in an embedded system, unreliable, and requires perfect timing (read more about it [here](https://www.mankier.com/1/nfc-emulate-uid)). The other solution is trivially easy to implement. Rather than go with the true emulation method, we picked up a [lab401 sector 0 programmable card](https://lab401.com/collections/all-products/products/mifare-compatible-1k-direct-write-uid). This method absolves adafruit of all legal liability, which is exactly the reason that firmware feature implementing a hardware protocol requirement (prepending a 0x08 byte) exists. Conveniently, this makes our design more discreet. 
 
 **Challenges and Solutions**
 
-- We wanted a controlled environment to test our project's functionality and so that's what we did. We made an RFID lock with an arduino uno and MFRC-522 module ([code found here](RFID_lock/RFID_lock.ino)). The lock came with it's own problems. It took a while to find out what was going on, but we weren't getting any response from our MFRC-522 because it wasn't an official module. We needed to slow down communication to our module and connect it to 5V even though 3.3V was printed on the PCB. *Note: we labeled it 3.3V-3.3V in the wiring diagram*
-- The original idea for this project was to have the PN532 emulate the copied UID itself. Unfortunately, due to security concerns (😒) the PN532 prepends a 0x08 byte when it sends its UID. So calling the command to send a specified UID like: 0x0000BEEF, would send: 0x080000BE. Luckily, you can just write a non-modified UID to a card. Weird, right? Almost too good to be true. So this is what we ended up pivoting to.
+- We wanted a controlled environment to test our project's functionality and so that's what we did. We made an RFID lock with an arduino uno and MFRC-522 module (code found [here](RFID_lock/RFID_lock.ino)). The lock came with it's own problems. It took a while to find out what was going on, but we weren't getting any response from our MFRC-522 because it wasn't an official module. We needed to slow down communication to our module and connect it to 5V even though 3.3V was printed on the PCB. *Note: we labeled it 3.3V-3.3V in the wiring diagram*
+- The original idea for this project was to have the PN532 emulate the copied UID itself. Unfortunately, due to security concerns (😒) the PN532 prepends a 0x08 byte when it sends its UID. So calling the command to send a specified UID like: 0x0000BEEF, would send: 0x080000BE. Luckily, you can just write a non-modified UID to a card. So this is what we ended up pivoting to as you read above.
 
 **Timeline**
 
@@ -18,6 +18,10 @@ suggested change -corbin "The standard pn532 is widely available and cheap. Unfo
 - Emulating function implemented, it is discovered that an 0x08 is prepended to every emulation (10/16/25)
 - Writing function finished (10/23/25)
 - Functional prototype finished (10/27/25)
+- Rev1 finsihed with screen displaying selectable UIDs to write. UIDs saved in memory ()
+- NFC compatibility added ()
+- wifi de-auther added ()
+- 125kHz module added ()
 
 **Testing and Results**
 
@@ -85,6 +89,6 @@ We used a few prints to bring this project together and give it a more prolished
 (link)
 
 # Acknowledgements
-We used Carglglz's [driver](https://github.com/Carglglz/NFC_PN532_SPI) to control the basic functions of the PN532, such as initialization and reading mifare classics
+We used Carglglz's [driver](https://github.com/Carglglz/NFC_PN532_SPI) to control the basic functions of the PN532, such as initialization and reading mifare classics.
 
 We added functionality to that driver using the principles from the [Adafruit PN532 driver](https://github.com/adafruit/Adafruit-PN532/blob/master/Adafruit_PN532.cpp) to write data to a programmable card, following mifare classic protocol. 
