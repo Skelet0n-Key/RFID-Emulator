@@ -2,8 +2,6 @@
 
 **Introduction**
 
-This project aims to solve a problem that we have: "I want to get through that door." This device is a lock-pick of sorts... but for 13.56MHz RFID locks.
-
 The standard PN532 is widely available and cheap. Manufacturers prevent custom UIDs from being emulated. When the 532 is put into target mode, the first byte of the UID will always be 0x08 (or 0x88 with some models). While there are ways to get around this security feature, it is difficult to implement in an embedded system, unreliable, and requires perfect timing (read more about it [here](https://www.mankier.com/1/nfc-emulate-uid)). The other solution is trivially easy to implement. Rather than go with the true emulation method, we picked up a [lab401 sector 0 programmable card](https://lab401.com/collections/all-products/products/mifare-compatible-1k-direct-write-uid). This method absolves adafruit of all legal liability, which is exactly the reason that firmware feature implementing a hardware protocol requirement (prepending a 0x08 byte) exists. Conveniently, this makes our design more discreet. 
 
 **Challenges and Solutions**
